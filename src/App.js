@@ -1,25 +1,53 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import Header from './components/Header';
+import ItemList from './components/ItemList';
+import Footer from './components/Footer';
 
-function App() {
+const App = () => {
+  const [items, setItems] = useState([]);
+  const [itemName, setItemName] = useState('');
+
+  const addItem = () => {
+    if (itemName.trim() === '') return;
+    const newItem = {
+      id: Date.now(),
+      name: itemName,
+      purchased: false,
+    };
+    setItems([...items, newItem]);
+    setItemName('');
+  };
+
+  const toggleItem = (id) => {
+    setItems(
+      items.map((item) =>
+        item.id === id ? { ...item, purchased: !item.purchased } : item
+      )
+    );
+  };
+
+  const deleteItem = (id) => {
+    setItems(items.filter((item) => item.id !== id));
+  };
+
+  const purchasedCount = items.filter((item) => item.purchased).length;
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <Header />
+      <div>
+        <input
+          type="text"
+          value={itemName}
+          onChange={(e) => setItemName(e.target.value)}
+          placeholder="Add new item"
+        />
+        <button onClick={addItem}>Add Item</button>
+      </div>
+      <ItemList items={items} toggleItem={toggleItem} deleteItem={deleteItem} />
+      <Footer purchasedCount={purchasedCount} />
     </div>
   );
-}
+};
 
 export default App;
